@@ -1,4 +1,6 @@
 defmodule Statuses do
+  require Logger
+
   @moduledoc """
   Documentation for `Statuses`.
   """
@@ -23,25 +25,32 @@ defmodule Statuses do
   that is not well defined but avoid changing the `text` or `id`.
   """
   def parse_json do
-    {:ok, cwd} = File.cwd
+    {:ok, cwd} = File.cwd()
+
+    Logger.info(cwd)
+    Logger.info(Path.expand("../statuses.json"))
     # we need this cd to locate the file in /deps
     case cwd =~ "/statuses" do
       true ->
         read_decode()
+
       # coveralls-ignore-start
-      false -> # temporarily cd into deps/quotes dir and read quotes.json file:
+      # temporarily cd into deps/quotes dir and read quotes.json file:
+      false ->
+        Logger.info("change directory!!")
         File.cd!("deps/statuses")
         data = read_decode()
         # chnge back into the root directory
         File.cd!("../..")
-        data # return the decoded (parsed) JSON data
-      # coveralls-ignore-stop
+        # return the decoded (parsed) JSON data
+        data
+        # coveralls-ignore-stop
     end
   end
-  
+
   defp read_decode do
-    File.read!("statuses.json") 
-    |> Jason.decode!() 
-    |> Enum.map(fn(m) -> Useful.atomize_map_keys(m) end)
+    File.read!("statuses.json")
+    |> Jason.decode!()
+    |> Enum.map(fn m -> Useful.atomize_map_keys(m) end)
   end
 end

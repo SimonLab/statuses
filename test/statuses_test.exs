@@ -7,28 +7,22 @@ defmodule StatusesTest do
     # assert Enum.count(list) == Utils.count()
 
     # sample status we know is in the list
-    sample =  %{
+    sample = %{
       id: "1",
       text: "verified"
     }
 
     # find the sample quote in the List of Maps:
-    [found] = Enum.map(list, fn q ->
-      if q.text == sample.text do
-        q
-      end
-    end)
-    |> Enum.filter(& !is_nil(&1)) # filter out any nil values
-    assert sample.id == found.id # sample status was found in the list
-  end
+    [found] =
+      Enum.map(list, fn q ->
+        if q.text == sample.text do
+          q
+        end
+      end)
+      # filter out any nil values
+      |> Enum.filter(&(!is_nil(&1)))
 
-  test "all statuses have :id and :text property" do
-    Statuses.parse_json()
-    |> Enum.each(fn(q) ->
-      assert Map.has_key?(q, :id)
-      assert Map.has_key?(q, :text)
-      assert q.id > 0
-      assert String.length(q.text) > 1
-    end)
+    # sample status was found in the list
+    assert sample.id == found.id
   end
 end
